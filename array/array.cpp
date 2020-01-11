@@ -21,9 +21,11 @@ void test_array_push()
 
 void test_sortarray_merge()
 {
-    SortedArray<int> arraya = SortedArray<int> (5);
+    SortedArray<int> arraya = SortedArray<int> (7);
     SortedArray<int> arrayb = SortedArray<int> (5);
-    Array<int> arrayc = Array<int> (10);
+    Array<int> arrayc = Array<int> (12);
+    arraya.push(12);
+    arraya.push(10);
     arraya.push(8);
     arraya.push(6);
     arraya.push(4);
@@ -130,8 +132,8 @@ int main()
 {
     //test_array_push();
     // test_sortarray_push();
-    test_sortedarray_dell();
-    // test_sortarray_merge();
+    //test_sortedarray_dell();
+    test_sortarray_merge();
 
     return 0 ;
 }

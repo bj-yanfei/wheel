@@ -312,11 +312,12 @@ void merge (Array<T>& ret, SortedArray<T>& A, SortedArray<T>& B)
             ret.push(B.at(B_i++), ret_i++);
         }
     }
-    
-    if (B_i > B_i_e) {
+
+    while (A_i <= A_i_e) {
         ret.push(A.at(A_i++), ret_i++);
     }
-    if (A_i > A_i_e) {
+
+    while (B_i <= B_i_e) {
         ret.push(B.at(B_i++), ret_i++);
     }
     return;
