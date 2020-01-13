@@ -1,6 +1,8 @@
 #include <iostream>
 #include "array.h"
 
+
+
 void test_array_push()
 {
     Array<int> array(4, true);

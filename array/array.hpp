@@ -88,6 +88,47 @@ protected:
 };
 
 template <typename T>
+class SortedArray : public Array<T> {
+public:
+    typedef T value_type;
+    typedef value_type& reference ;
+    typedef const value_type& const_reference;
+
+    SortedArray(int n) : Array<T>(n) {}
+    ~SortedArray() {}
+
+    void push(const_reference data);
+    void dell(const_reference data);
+
+private:
+    size_t search(const_reference value)
+    {
+        int low = 0;
+        int high = Array<T>::_size-1;
+        value_type *data = Array<T>::_data;
+
+        while (low <= high) {
+            int mid = low + (high-low)/2;
+
+            if (low == high) {
+                if (data[mid] > value) return mid;
+                if (data[mid] < value) return mid+1;
+            }
+
+            if (data[mid] > value) {
+                high = mid - 1;
+            } else if (data[mid] < value) {
+                low = mid + 1;
+            } else {
+                if ((mid == Array<T>::_size-1) || (data[mid+1] != value)) return mid+1;
+                else low = mid + 1;
+            }
+        }
+        if (low > high) return low;
+    }
+};
+
+template <typename T>
 void Array<T>::push(const_reference data)
 {
     if (!is_full()) {
@@ -211,46 +252,6 @@ typename Array<T>::const_reference Array<T>::at(const size_t pos) const
 template <typename T>
 size_t Array<T>::where(const_reference data){}
 
-template <typename T>
-class SortedArray : public Array<T> {
-public:
-    typedef T value_type;
-    typedef value_type& reference ;
-    typedef const value_type& const_reference;
-
-    SortedArray(int n) : Array<T>(n) {}
-    ~SortedArray() {}
-
-    void push(const_reference data);
-    void dell(const_reference data);
-
-private:
-    size_t search(const_reference value)
-    {
-        int low = 0;
-        int high = Array<T>::_size-1;
-        value_type *data = Array<T>::_data;
-
-        while (low <= high) {
-            int mid = low + (high-low)/2;
-
-            if (low == high) {
-                if (data[mid] > value) return mid;
-                if (data[mid] < value) return mid+1;
-            }
-
-            if (data[mid] > value) {
-                high = mid - 1;
-            } else if (data[mid] < value) {
-                low = mid + 1;
-            } else {
-                if ((mid == Array<T>::_size-1) || (data[mid+1] != value)) return mid+1;
-                else low = mid + 1;
-            }
-        }
-        if (low > high) return low;
-    }
-};
 
 template <typename T>
 void SortedArray<T>::push(const_reference data)
@@ -322,5 +323,4 @@ void merge (Array<T>& ret, SortedArray<T>& A, SortedArray<T>& B)
     }
     return;
 }
-
 #endif

@@ -1,5 +1,183 @@
-#include <iostream>
-#include "list.h"
+#ifndef __LIST__
+#define __LIST__
+
+template <typename T>
+class ListNode {
+public:
+    T _val;
+    ListNode *_prev = nullptr;
+    ListNode *_next = nullptr;
+};
+
+template <typename T>
+class LinkedList {
+public:
+    LinkedList() {}
+    virtual ~LinkedList() {}
+
+    virtual bool is_empty() const = 0;
+    virtual void pop_front() = 0;
+    virtual void pop_back() = 0;
+    virtual void push_front(const T &data) = 0;
+    virtual void push_back(const T &data) = 0;
+    virtual size_t size() const = 0;
+    virtual T & front() = 0;
+    virtual const T & front() const = 0;
+    virtual T & back() = 0;
+    virtual const T & back() const = 0;
+    virtual void show() const = 0;
+};
+
+template <typename T>
+class SingleList : public LinkedList<T>{
+public:
+    typedef T value_type;
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    SingleList() {
+        _head = new ListNode<value_type>();
+        _count = 0;
+    }
+
+    ~SingleList() {
+        if (!is_empty()) {
+            pop_back();
+        }
+        delete _head;
+        _head = nullptr;
+        _count = 0;
+    }
+
+    bool is_empty() const override;
+    void pop_front() override;
+    void pop_back() override;
+    void push_front(const value_type &data) override;
+    void push_back(const value_type &data) override;
+    size_t size() const override;
+    reference front() override;
+    const_reference front() const override;
+    reference back() override;
+    const_reference back() const override;
+    virtual void show() const override;
+
+
+protected:
+    ListNode<T> *_head = nullptr;
+    ListNode<T> *_tail = nullptr;
+    size_t _count = 0;
+
+
+    ListNode<value_type>* & find_end_prev()
+    {
+        if (!is_empty()) {
+            ListNode<value_type> *p = _head;
+            while (p->_next->_next != nullptr) {
+                p = p->_next;
+            }
+            return p;
+        }
+    }
+
+    ListNode<value_type>* & find_end()
+    {
+        ListNode<value_type> *p = _head;
+        while (p->_next != nullptr) {
+            p = p->_next;
+        }
+        return p;
+    }
+};
+
+
+template <typename T>
+class SingleCycleList : public SingleList<T> {
+public:
+    typedef T value_type;
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    SingleCycleList() : SingleList<T>() {
+        SingleList<T>::_head->_next = SingleList<T>::_head;
+    }
+
+    ~SingleCycleList()
+    {
+        if (!SingleList<T>::is_empty()) {
+            pop_back();
+        }
+        delete SingleList<T>::_head;
+        SingleList<T>::_head = nullptr;
+        SingleList<T>::_count = 0;
+    }
+
+    void push_back(const value_type &data) override;
+    void pop_back() override;
+    reference back() override;
+    const_reference back() const override;
+    void show() const override;
+
+private:
+    ListNode<value_type>* & find_end_prev()
+    {
+        if (!SingleList<T>::is_empty()) {
+            ListNode<value_type> *p = SingleList<T>::_head;
+            while (p->_next->_next != SingleList<T>::_head) {
+                p = p->_next;
+            }
+            return p;
+        }
+    }
+
+    ListNode<value_type>* & find_end()
+    {
+        ListNode<value_type> *p = SingleList<T>::_head;
+        while (p->_next != SingleList<T>::_head) {
+            p = p->_next;
+        }
+        return p;
+    }
+};
+
+
+template <typename T>
+class DoublyList : public LinkedList<T>{
+public:
+    typedef T value_type;
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    DoublyList() {
+        _head = new ListNode<value_type>();
+        _tail = _head;
+        _count = 0;
+    }
+
+    ~DoublyList() {
+        if (!is_empty()) {
+            pop_back();
+        }
+        delete _head;
+        _head = nullptr;
+        _tail = nullptr;
+        _count = 0;
+    }
+
+    bool is_empty() const override;
+    void pop_front() override;
+    void pop_back() override;
+    void push_front(const value_type &data) override;
+    void push_back(const value_type &data) override;
+    size_t size() const override;
+    reference front() override;
+    const_reference front() const override;
+    reference back() override;
+    const_reference back() const override;
+    virtual void show() const override;
+
+
+protected:
+    ListNode<T> *_head = nullptr;
+    ListNode<T> *_tail = nullptr;
+    size_t _count = 0;
+};
 
 /**** SingleList ****/
 template <typename T>
@@ -295,160 +473,6 @@ void DoublyList<T>::show() const
     std::cout << std::endl;
 }
 
-void test_single_list()
-{
-    LinkedList<int> *list = new SingleList<int> ();
-    list->push_front(5);
-    list->push_front(4);
-    list->push_front(3);
-    list->push_front(2);
-    list->push_front(1);
-
-    list->push_back(5);
-    list->push_back(4);
-    list->push_back(3);
-    list->push_back(2);
-    list->push_back(1);
-    
-    list->show();
-
-    std::cout << "front: " << list->front() << std::endl;
-    std::cout << "back: " << list->back() << std::endl;
-    list->back() = 10;
-
-    list->show();
-    delete list;
-}
-
-void test_single_cycle_list()
-{
-    LinkedList<int> *list = new SingleCycleList<int> ();
-    list->push_front(5);
-    list->push_front(4);
-    list->push_front(3);
-    list->push_front(2);
-    list->push_front(1);
-
-    list->push_back(5);
-    list->push_back(4);
-    list->push_back(3);
-    list->push_back(2);
-    list->push_back(1);
-    
-    list->show();
-
-    std::cout << "front: " << list->front() << std::endl;
-    std::cout << "back: " << list->back() << std::endl;
-    list->back() = 10;
-
-    list->show();
-    delete list;
-}
-
-void test_doubly_list()
-{
-    LinkedList<int> *list = new DoublyList<int> ();
-    list->push_front(5);
-    list->push_front(4);
-    list->push_front(3);
-    list->push_front(2);
-    list->push_front(1);
-
-    list->push_back(5);
-    list->push_back(4);
-    list->push_back(3);
-    list->push_back(2);
-    list->push_back(1);
-    
-    list->show();
-
-    std::cout << "front: " << list->front() << std::endl;
-    std::cout << "back: " << list->back() << std::endl;
-    list->back() = 10;
-
-    list->show();
-    delete list;
-}
 
 
-void reverse_single_list()
-{
-    LinkedList<int> *list = new SingleList<int> ();
-    list->push_front(5);
-    list->push_front(4);
-    list->push_front(3);
-    list->push_front(2);
-    list->push_front(1);
-    list->show();
-
-    LinkedList<int> *nlist = new SingleList<int> ();
-    while(!list->is_empty()) {
-        nlist->push_front(list->front());
-        list->pop_front();
-    }
-    nlist->show();
-
-    delete list;
-    delete nlist;
-}
-
-void merge_2_sorted_list()
-{
-    LinkedList<int> *list1 = new SingleList<int> ();
-    list1->push_front(15);
-    list1->push_front(10);
-    list1->push_front(8);
-    list1->push_front(6);
-    list1->push_front(4);
-    list1->push_front(2);
-    list1->show();
-
-    LinkedList<int> *list2 = new SingleList<int> ();
-    list2->push_front(9);
-    list2->push_front(7);
-    list2->push_front(3);
-    list2->push_front(3);
-    list2->push_front(1);
-    list2->show();
-
-    LinkedList<int> *list3 = new SingleList<int> ();
-
-    while(!list1->is_empty() && !list2->is_empty()) {
-        if (list1->front() <= list2->front()) {
-            list3->push_back(list1->front());
-            list1->pop_front();
-        } else {
-            list3->push_back(list2->front());
-            list2->pop_front();
-        }
-    }
-
-    while(!list1->is_empty()) {
-        list3->push_back(list1->front());
-        list1->pop_front();
-    }
-
-    while(!list2->is_empty()) {
-        list3->push_back(list2->front());
-        list2->pop_front();
-    }
-
-    list1->show();
-    list2->show();
-    list3->show();
-
-    delete list1;
-    delete list2;
-    delete list3;
-}
-
-int main()
-{
-    //test_single_list();
-    //test_single_cycle_list();
-    //test_doubly_list();
-    //reverse_single_list();
-    merge_2_sorted_list();
-
-    return 0;
-}
+#endif
